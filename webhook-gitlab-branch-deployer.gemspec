@@ -21,7 +21,6 @@ Gem::Specification.new do |spec|
   spec.add_dependency "json"
   spec.add_dependency "rack"
   spec.add_dependency "thin"
-  spec.add_dependency "optparse"
   spec.add_dependency "puppet"
   spec.add_dependency "daemons"
 end
