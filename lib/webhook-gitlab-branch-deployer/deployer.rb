@@ -64,7 +64,7 @@ class Deployer
     puts "remove #{@branch}"
   end
 
-  def add_branch(cfg)
+  def add_branch
     puts 'Adding branch'
     Dir.chdir(LOCAL_REPO_PATH)
     cmd = "git clone --depth 1 -o origin -b #{@branch} #{@repository} #{@branch}"

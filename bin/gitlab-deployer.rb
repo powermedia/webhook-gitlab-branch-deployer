@@ -1,5 +1,4 @@
 #!/usr/bin/ruby19
-#
 require 'rubygems'
 require 'daemons'
 require 'optparse'
@@ -16,21 +15,23 @@ optparse = OptionParser.new do |opts|
     options[:verbose] = true
   end
 
-  opts.on( '-p', '--port String', :required,  "Listen on port (default 3000)" ) do|l|
+  options[:port] = 3000
+  opts.on( '-p', '--port String',  "Listen on port (default #{options[:port]})" ) do |l|
     options[:port] = l
   end
-  options[:port] ||= 3000
 
-  opts.on( '-m', '--puppet String', :required,  "Puppet manifests path" ) do|l|
+  options[:puppet] = '/etc/gitlab-deployer'
+  opts.on( '-m', '--puppet String',  "Puppet manifests path (default #{options[:puppet]})" ) do |l|
     options[:puppet] = l
   end
-  options[:puppet] ||= '/etc/gitlab-deployer'
 
   opts.on( '-h', '--help', 'Display this screen' ) do
     puts opts
     exit
   end
+
 end
+
 optparse.parse!
 
 Daemons.run_proc(
@@ -40,6 +41,15 @@ Daemons.run_proc(
   :log_dir => '/var/log',
   :log_output => true
 ) do
+  app = Proc.new do |env|
+    Rack::Request.new(env)
+    msg = JSON.parse env['rack.input'].read
+    deploy = Deployer.new(msg,options[:puppet])
+    # TODO, split by '; ' why??
+    deploy.local_update
+    deploy.response
+  end
+
   Rack::Handler::Thin.run(app, Port: options[:port], threaded: true)
 end
 
