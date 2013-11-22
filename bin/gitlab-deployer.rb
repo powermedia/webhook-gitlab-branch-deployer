@@ -44,7 +44,7 @@ Daemons.run_proc(
   app = Proc.new do |env|
     Rack::Request.new(env)
     msg = JSON.parse env['rack.input'].read
-    deploy = Deployer.new(msg,options[:puppet])
+    deploy = Deployer.new(msg: msg, puppet_path: options[:puppet], request_uri: env['REQUEST_URI'])
     # TODO, split by '; ' why??
     deploy.local_update
     deploy.response
