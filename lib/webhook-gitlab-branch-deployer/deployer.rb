@@ -90,7 +90,7 @@ class Deployer
     if File.exists?(puppet_manifest) then
       puts "Applying Puppet manifest #{puppet_manifest}"
       cmd = "puppet apply #{puppet_manifest}"
-      system(cmd)
+      IO.popen(cmd)
       cmd = "Manifest #{puppet_manifest} applied"
     else
       puts "No Puppet manifest found @ #{puppet_manifest} "
